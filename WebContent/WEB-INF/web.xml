@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN" "http://java.sun.com/j2ee/dtds/web-app_2_2.dtd">
+<web-app id="WebApp_ID">
+	<display-name>GtJavaSdkDemo</display-name>
+
+	<servlet>
+		<servlet-name>StartCaptchaServlet1</servlet-name>
+		<display-name>StartCaptchaServlet1</display-name>
+		<description></description>
+		<servlet-class>demo.demo1.StartCaptchaServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>VerifyLoginServlet1</servlet-name>
+		<display-name>VerifyLoginServlet1</display-name>
+		<description></description>
+		<servlet-class>demo.demo1.VerifyLoginServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>StartCaptchaServlet2</servlet-name>
+		<display-name>StartCaptchaServlet2</display-name>
+		<description></description>
+		<servlet-class>demo.demo2.StartCaptchaServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>VerifyLoginServlet2</servlet-name>
+		<display-name>VerifyLoginServlet2</display-name>
+		<description></description>
+		<servlet-class>demo.demo2.VerifyLoginServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>VerifyLoginServlet1</servlet-name>
+		<url-pattern>/gt/ajax-validate1</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>StartCaptchaServlet1</servlet-name>
+		<url-pattern>/gt/register1</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>VerifyLoginServlet2</servlet-name>
+		<url-pattern>/gt/ajax-validate2</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>StartCaptchaServlet2</servlet-name>
+		<url-pattern>/gt/register2</url-pattern>
+	</servlet-mapping>
+
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
+</web-app>
