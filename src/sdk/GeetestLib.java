@@ -73,11 +73,6 @@ public class GeetestLib {
 	private boolean newFailback = false;
 	
 	/**
-	 * 标记字段
-	 */
-	private String userId = "";
-	
-	/**
 	 * 返回字符串
 	 */
 	private String responseStr = "";
@@ -91,6 +86,22 @@ public class GeetestLib {
 	 * 极验验证API服务状态Session Key
 	 */
 	public String gtServerStatusSessionKey = "gt_server_status";
+	
+	/**
+	 * 标记字段
+	 */
+	public String userId = "";
+	
+	/**
+	 * 标记验证模块所应用的终端类型
+	 */
+	public String clientType = "";
+	
+	/**
+	 * 标记用户请求验证时所携带的IP
+	 */
+	public String ipAddress  = "";
+	
 	
 	/**
 	 * 带参数构造函数
@@ -220,10 +231,20 @@ public class GeetestLib {
 			
 			String getUrl = apiUrl + registerUrl + "?";
 			String param = "gt=" + this.captchaId + "&json_format=" + this.json_format;
+			
 			if (this.userId != ""){
 				param = param + "&user_id=" + this.userId;
 				this.userId = "";
 			}
+			if (this.clientType != ""){
+				param = param + "&client_type=" + this.clientType;
+				this.clientType = "";
+			}
+			if (this.ipAddress != ""){
+				param = param + "&ip_address=" + this.ipAddress;
+				this.ipAddress = "";
+			}
+			
 			gtlog("GET_URL:" + getUrl + param);
 			String result_str = readContentFromGet(getUrl + param);
 			if (result_str == "fail"){
