@@ -98,7 +98,7 @@
 <script src="http://apps.bdimg.com/libs/jquery/1.9.1/jquery.js"></script>
 
 <!-- 引入 gt.js，既可以使用其中提供的 initGeetest 初始化函数 -->
-<script src="http://static.geetest.com/static/tools/gt.js"></script>
+<script src="gt.js"></script>
 
 <script>
     var handler1 = function (captchaObj) {
