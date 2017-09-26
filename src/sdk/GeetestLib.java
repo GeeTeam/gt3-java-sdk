@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 import javax.print.DocFlavor.STRING;
 import javax.servlet.descriptor.JspConfigDescriptor;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.crypto.Data;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -86,22 +87,6 @@ public class GeetestLib {
 	 * 极验验证API服务状态Session Key
 	 */
 	public String gtServerStatusSessionKey = "gt_server_status";
-	
-	/**
-	 * 标记字段
-	 */
-	public String userId = "";
-	
-	/**
-	 * 标记验证模块所应用的终端类型
-	 */
-	public String clientType = "";
-	
-	/**
-	 * 标记用户请求验证时所携带的IP
-	 */
-	public String ipAddress  = "";
-	
 	
 	/**
 	 * 带参数构造函数
@@ -194,9 +179,9 @@ public class GeetestLib {
 	 *
 	 * @return 1表示初始化成功，0表示初始化失败
 	 */
-	public int preProcess() {
+	public int preProcess(HashMap<String, String> data) {
 
-		if (registerChallenge() != 1) {
+		if (registerChallenge(data) != 1) {
 			
 			this.responseStr = this.getFailPreProcessRes();
 			return 0;
@@ -206,43 +191,30 @@ public class GeetestLib {
 		return 1;
 
 	}
-	
-	/**
-	 * 验证初始化预处理
-	 *
-	 * @param userid
-	 * @return 1表示初始化成功，0表示初始化失败
-	 */
-	public int preProcess(String userid){
-		
-		this.userId = userid;
-		return this.preProcess();
-		
-	}	
 
 	/**
 	 * 用captchaID进行注册，更新challenge
 	 * 
 	 * @return 1表示注册成功，0表示注册失败
 	 */
-	private int registerChallenge() {
+	private int registerChallenge(HashMap<String, String>data) {
 		
 		try {
+			String userId = data.get("user_id");
+			String clientType = data.get("client_type");
+			String ipAddress = data.get("ip_address");
 			
 			String getUrl = apiUrl + registerUrl + "?";
 			String param = "gt=" + this.captchaId + "&json_format=" + this.json_format;
 			
-			if (this.userId != ""){
-				param = param + "&user_id=" + this.userId;
-				this.userId = "";
+			if (userId != null){
+				param = param + "&user_id=" + userId;
 			}
-			if (this.clientType != ""){
-				param = param + "&client_type=" + this.clientType;
-				this.clientType = "";
+			if (clientType != null){
+				param = param + "&client_type=" + clientType;
 			}
-			if (this.ipAddress != ""){
-				param = param + "&ip_address=" + this.ipAddress;
-				this.ipAddress = "";
+			if (ipAddress != null){
+				param = param + "&ip_address=" + ipAddress;
 			}
 			
 			gtlog("GET_URL:" + getUrl + param);
@@ -344,7 +316,7 @@ public class GeetestLib {
 	 * @param seccode
 	 * @return 验证结果,1表示验证成功0表示验证失败
 	 */
-	public int enhencedValidateRequest(String challenge, String validate, String seccode) {	
+	public int enhencedValidateRequest(String challenge, String validate, String seccode, HashMap<String, String> data) {	
 		
 		if (!resquestIsLegal(challenge, validate, seccode)) {
 			
@@ -354,9 +326,25 @@ public class GeetestLib {
 		
 		gtlog("request legitimate");
 		
+		String userId = data.get("user_id");
+		String clientType = data.get("client_type");
+		String ipAddress = data.get("ip_address");
+		
 		String postUrl = this.apiUrl + this.validateUrl;
 		String param = String.format("challenge=%s&validate=%s&seccode=%s&json_format=%s", 
-				                     challenge, validate, seccode, this.json_format); 
+				                     challenge, validate, seccode, this.json_format);
+		
+		if (userId != null){
+			param = param + "&user_id=" + userId;
+		}
+		if (clientType != null){
+			param = param + "&client_type=" + clientType;
+		}
+		if (ipAddress != null){
+			param = param + "&ip_address=" + ipAddress;
+		}
+		
+		gtlog("param:" + param);
 		
 		String response = "";
 		try {
@@ -411,21 +399,6 @@ public class GeetestLib {
 			
 		}
 		
-	}
-	
-	/**
-	 * 服务正常的情况下使用的验证方式,向gt-server进行二次验证,获取验证结果
-	 * 
-	 * @param challenge
-	 * @param validate
-	 * @param seccode
-	 * @param userid
-	 * @return 验证结果,1表示验证成功0表示验证失败
-	 */
-	public int enhencedValidateRequest(String challenge, String validate, String seccode, String userid) {	
-		
-		this.userId = userid;
-		return this.enhencedValidateRequest(challenge, validate, seccode);
 	}
 
 	/**
