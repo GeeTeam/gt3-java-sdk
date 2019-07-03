@@ -1,29 +1,18 @@
 package sdk;
 
-import java.awt.print.Printable;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.GenericArrayType;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.URLEncoder;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Logger;
-
-import javax.print.DocFlavor.STRING;
-import javax.servlet.descriptor.JspConfigDescriptor;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.crypto.Data;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -200,9 +189,9 @@ public class GeetestLib {
 	private int registerChallenge(HashMap<String, String>data) {
 		
 		try {
-			String userId = data.get("user_id");
-			String clientType = data.get("client_type");
-			String ipAddress = data.get("ip_address");
+			String userId = URLEncoder.encode(data.get("user_id"), "utf-8");
+			String clientType = URLEncoder.encode(data.get("client_type"), "utf-8");
+			String ipAddress = URLEncoder.encode(data.get("ip_address"), "utf-8");
 			
 			String getUrl = apiUrl + registerUrl + "?";
 			String param = "gt=" + this.captchaId + "&json_format=" + this.json_format;
@@ -316,23 +305,23 @@ public class GeetestLib {
 	 * @param seccode
 	 * @return 验证结果,1表示验证成功0表示验证失败
 	 */
-	public int enhencedValidateRequest(String challenge, String validate, String seccode, HashMap<String, String> data) {	
+	public int enhencedValidateRequest(String challenge, String validate, String seccode, HashMap<String, String> data) throws UnsupportedEncodingException{	
 		
 		if (!resquestIsLegal(challenge, validate, seccode)) {
 			
 			return 0;
 			
 		}
-		
-		gtlog("request legitimate");
-		
-		String userId = data.get("user_id");
-		String clientType = data.get("client_type");
-		String ipAddress = data.get("ip_address");
-		
-		String postUrl = this.apiUrl + this.validateUrl;
-		String param = String.format("challenge=%s&validate=%s&seccode=%s&json_format=%s", 
-				                     challenge, validate, seccode, this.json_format);
+
+        gtlog("request legitimate");
+
+        String userId = URLEncoder.encode(data.get("user_id"), "utf-8");
+        String clientType = URLEncoder.encode(data.get("client_type"), "utf-8");
+        String ipAddress = URLEncoder.encode(data.get("ip_address"), "utf-8");
+
+        String postUrl = this.apiUrl + this.validateUrl;
+        String param = String.format(
+            "challenge=%s&validate=%s&seccode=%s&json_format=%s", challenge, validate, seccode, this.json_format);
 		
 		if (userId != null){
 			param = param + "&user_id=" + userId;
@@ -501,7 +490,7 @@ public class GeetestLib {
 		// 建立与服务器的连接，并未发送数据
 		connection.connect();
 		
-		 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream(), "utf-8");  
+		 OutputStreamWriter outputStreamWriter = new OutputStreamWriter(connection.getOutputStream(), "utf-8");
 		 outputStreamWriter.write(data);  
 		 outputStreamWriter.flush();
 		 outputStreamWriter.close();

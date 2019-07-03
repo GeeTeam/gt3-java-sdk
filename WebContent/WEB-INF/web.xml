@@ -4,53 +4,28 @@
 	<display-name>GtJavaSdkDemo</display-name>
 
 	<servlet>
-		<servlet-name>StartCaptchaServlet1</servlet-name>
-		<display-name>StartCaptchaServlet1</display-name>
+		<servlet-name>StartCaptchaServlet</servlet-name>
+		<display-name>StartCaptchaServlet</display-name>
 		<description></description>
-		<servlet-class>demo.demo1.StartCaptchaServlet</servlet-class>
+		<servlet-class>demo.StartCaptchaServlet</servlet-class>
 	</servlet>
 	<servlet>
-		<servlet-name>VerifyLoginServlet1</servlet-name>
-		<display-name>VerifyLoginServlet1</display-name>
+		<servlet-name>VerifyLoginServlet</servlet-name>
+		<display-name>VerifyLoginServlet</display-name>
 		<description></description>
-		<servlet-class>demo.demo1.VerifyLoginServlet</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>StartCaptchaServlet2</servlet-name>
-		<display-name>StartCaptchaServlet2</display-name>
-		<description></description>
-		<servlet-class>demo.demo2.StartCaptchaServlet</servlet-class>
-	</servlet>
-	<servlet>
-		<servlet-name>VerifyLoginServlet2</servlet-name>
-		<display-name>VerifyLoginServlet2</display-name>
-		<description></description>
-		<servlet-class>demo.demo2.VerifyLoginServlet</servlet-class>
+		<servlet-class>demo.VerifyLoginServlet</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>VerifyLoginServlet1</servlet-name>
-		<url-pattern>/gt/ajax-validate1</url-pattern>
+		<servlet-name>VerifyLoginServlet</servlet-name>
+		<url-pattern>/gt/ajax-validate</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>StartCaptchaServlet1</servlet-name>
-		<url-pattern>/gt/register1</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>VerifyLoginServlet2</servlet-name>
-		<url-pattern>/gt/ajax-validate2</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>StartCaptchaServlet2</servlet-name>
-		<url-pattern>/gt/register2</url-pattern>
+		<servlet-name>StartCaptchaServlet</servlet-name>
+		<url-pattern>/gt/register</url-pattern>
 	</servlet-mapping>
 
 	<welcome-file-list>
-		<welcome-file>index.html</welcome-file>
-		<welcome-file>index.htm</welcome-file>
-		<welcome-file>index.jsp</welcome-file>
-		<welcome-file>default.html</welcome-file>
-		<welcome-file>default.htm</welcome-file>
-		<welcome-file>default.jsp</welcome-file>
+		<welcome-file>login.jsp</welcome-file>
 	</welcome-file-list>
 </web-app>

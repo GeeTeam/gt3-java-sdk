@@ -1,28 +1,11 @@
-/* initGeetest 1.0.0
- * 用于加载id对应的验证码库，并支持宕机模式
- * 暴露 initGeetest 进行验证码的初始化
- * 一般不需要用户进行修改
- */
-(function (global, factory) {
-    "use strict";
-    if (typeof module === "object" && typeof module.exports === "object") {
-        // CommonJS
-        module.exports = global.document ?
-            factory(global, true) :
-            function (w) {
-                if (!w.document) {
-                    throw new Error("Geetest requires a window with a document");
-                }
-                return factory(w);
-            };
-    } else {
-        factory(global);
-    }
-})(typeof window !== "undefined" ? window : this, function (window, noGlobal) {
+"v0.4.7 Geetest Inc.";
+
+(function (window) {
     "use strict";
     if (typeof window === 'undefined') {
         throw new Error('Geetest requires browser environment');
     }
+
     var document = window.document;
     var Math = window.Math;
     var head = document.getElementsByTagName("head")[0];
@@ -42,6 +25,7 @@
             return this;
         }
     };
+
     function Config(config) {
         var self = this;
         new _Object(config)._each(function (key, value) {
@@ -52,7 +36,7 @@
     Config.prototype = {
         api_server: 'api.geetest.com',
         protocol: 'http://',
-        type_path: '/gettype.php',
+        typePath: '/gettype.php',
         fallback_config: {
             slide: {
                 static_servers: ["static.geetest.com", "dn-staticdown.qbox.me"],
@@ -97,15 +81,49 @@
     var isFunction = function (value) {
         return (typeof value === 'function');
     };
+    var MOBILE = /Mobi/i.test(navigator.userAgent);
+    var pt = MOBILE ? 3 : 0;
+
     var callbacks = {};
     var status = {};
+
+    var nowDate = function () {
+        var date = new Date();
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var day = date.getDate();
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+        var seconds = date.getSeconds();
+
+        if (month >= 1 && month <= 9) {
+            month = '0' + month;
+        }
+        if (day >= 0 && day <= 9) {
+            day = '0' + day;
+        }
+        if (hours >= 0 && hours <= 9) {
+            hours = '0' + hours;
+        }
+        if (minutes >= 0 && minutes <= 9) {
+            minutes = '0' + minutes;
+        }
+        if (seconds >= 0 && seconds <= 9) {
+            seconds = '0' + seconds;
+        }
+        var currentdate = year + '-' + month + '-' + day + " " + hours + ":" + minutes + ":" + seconds;
+        return currentdate;
+    }
+
     var random = function () {
         return parseInt(Math.random() * 10000) + (new Date()).valueOf();
     };
+
     var loadScript = function (url, cb) {
         var script = document.createElement("script");
         script.charset = "UTF-8";
         script.async = true;
+
         script.onerror = function () {
             cb(true);
         };
@@ -125,8 +143,11 @@
         script.src = url;
         head.appendChild(script);
     };
+
     var normalizeDomain = function (domain) {
-        return domain.replace(/^https?:\/\/|\/$/g, '');
+        // special domain: uems.sysu.edu.cn/jwxt/geetest/
+        // return domain.replace(/^https?:\/\/|\/.*$/g, ''); uems.sysu.edu.cn
+        return domain.replace(/^https?:\/\/|\/$/g, ''); // uems.sysu.edu.cn/jwxt/geetest
     };
     var normalizePath = function (path) {
         path = path.replace(/\/+/g, '/');
@@ -160,7 +181,8 @@
 
         return url;
     };
-    var load = function (protocol, domains, path, query, cb) {
+
+    var load = function (config, send, protocol, domains, path, query, cb) {
         var tryRequest = function (at) {
 
             var url = makeURL(protocol, domains[at], path, query);
@@ -168,6 +190,12 @@
                 if (err) {
                     if (at >= domains.length - 1) {
                         cb(true);
+                        // report gettype error
+                        if (send) {
+                            config.error_code = 508;
+                            var url = protocol + domains[at] + path;
+                            reportError(config, url);
+                        }
                     } else {
                         tryRequest(at + 1);
                     }
@@ -178,6 +206,8 @@
         };
         tryRequest(0);
     };
+
+
     var jsonp = function (domains, path, config, callback) {
         if (isObject(config.getLib)) {
             config._extend(config.getLib);
@@ -188,9 +218,10 @@
             callback(config._get_fallback_config());
             return;
         }
+
         var cb = "geetest_" + random();
         window[cb] = function (data) {
-            if (data.status === 'success') {
+            if (data.status == 'success') {
                 callback(data.data);
             } else if (!data.status) {
                 callback(data);
@@ -203,7 +234,7 @@
             } catch (e) {
             }
         };
-        load(config.protocol, domains, path, {
+        load(config, true, config.protocol, domains, path, {
             gt: config.gt,
             callback: cb
         }, function (err) {
@@ -212,9 +243,22 @@
             }
         });
     };
+
+    var reportError = function (config, url) {
+        load(config, false, config.protocol, ['monitor.geetest.com'], '/monitor/send', {
+            time: nowDate(),
+            captcha_id: config.gt,
+            challenge: config.challenge,
+            pt: pt,
+            exception_url: url,
+            error_code: config.error_code
+        }, function (err) {})
+    }
+
     var throwError = function (errorType, config) {
         var errors = {
-            networkError: '网络错误'
+            networkError: '缃戠粶閿欒',
+            gtTypeError: 'gt瀛楁涓嶆槸瀛楃涓茬被鍨�'
         };
         if (typeof config.onError === 'function') {
             config.onError(errors[errorType]);
@@ -222,31 +266,50 @@
             throw new Error(errors[errorType]);
         }
     };
+
     var detect = function () {
-        return !!window.Geetest;
+        return window.Geetest || document.getElementById("gt_lib");
     };
+
     if (detect()) {
         status.slide = "loaded";
     }
-    var initGeetest = function (userConfig, callback) {
+
+    window.initGeetest = function (userConfig, callback) {
+
         var config = new Config(userConfig);
+
         if (userConfig.https) {
             config.protocol = 'https://';
         } else if (!userConfig.protocol) {
             config.protocol = window.location.protocol + '//';
         }
-        jsonp([config.api_server || config.apiserver], config.type_path, config, function (newConfig) {
+
+        // for KFC
+        if (userConfig.gt === '050cffef4ae57b5d5e529fea9540b0d1' ||
+            userConfig.gt === '3bd38408ae4af923ed36e13819b14d42') {
+            config.apiserver = 'yumchina.geetest.com/'; // for old js
+            config.api_server = 'yumchina.geetest.com';
+        }
+
+        if (isObject(userConfig.getType)) {
+            config._extend(userConfig.getType);
+        }
+        jsonp([config.api_server || config.apiserver], config.typePath, config, function (newConfig) {
             var type = newConfig.type;
             var init = function () {
                 config._extend(newConfig);
                 callback(new window.Geetest(config));
             };
+
             callbacks[type] = callbacks[type] || [];
             var s = status[type] || 'init';
             if (s === 'init') {
                 status[type] = 'loading';
+
                 callbacks[type].push(init);
-                load(config.protocol, newConfig.static_servers || newConfig.domains, newConfig[type] || newConfig.path, null, function (err) {
+
+                load(config, true, config.protocol, newConfig.static_servers || newConfig.domains, newConfig[type] || newConfig.path, null, function (err) {
                     if (err) {
                         status[type] = 'fail';
                         throwError('networkError', config);
@@ -270,7 +333,8 @@
                 callbacks[type].push(init);
             }
         });
+
     };
-    window.initGeetest = initGeetest;
-    return initGeetest;
-});
+
+
+})(window);
