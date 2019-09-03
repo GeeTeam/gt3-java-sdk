@@ -1,4 +1,4 @@
-"v0.4.7 Geetest Inc.";
+"v0.4.8 Geetest Inc.";
 
 (function (window) {
     "use strict";
@@ -123,6 +123,11 @@
         var script = document.createElement("script");
         script.charset = "UTF-8";
         script.async = true;
+
+        // 对geetest的静态资源添加 crossOrigin
+        if ( /static\.geetest\.com/g.test(url)) {
+            script.crossOrigin = "anonymous";
+        }
 
         script.onerror = function () {
             cb(true);
@@ -257,8 +262,8 @@
 
     var throwError = function (errorType, config) {
         var errors = {
-            networkError: '缃戠粶閿欒',
-            gtTypeError: 'gt瀛楁涓嶆槸瀛楃涓茬被鍨�'
+            networkError: '网络错误',
+            gtTypeError: 'gt字段不是字符串类型'
         };
         if (typeof config.onError === 'function') {
             config.onError(errors[errorType]);
@@ -290,6 +295,14 @@
             userConfig.gt === '3bd38408ae4af923ed36e13819b14d42') {
             config.apiserver = 'yumchina.geetest.com/'; // for old js
             config.api_server = 'yumchina.geetest.com';
+        }
+
+        if(userConfig.gt){
+            window.GeeGT = userConfig.gt
+        }
+
+        if(userConfig.challenge){
+            window.GeeChallenge = userConfig.challenge
         }
 
         if (isObject(userConfig.getType)) {
@@ -338,3 +351,4 @@
 
 
 })(window);
+
