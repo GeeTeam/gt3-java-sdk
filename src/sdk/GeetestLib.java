@@ -189,21 +189,21 @@ public class GeetestLib {
 	private int registerChallenge(HashMap<String, String>data) {
 		
 		try {
-			String userId = URLEncoder.encode(data.get("user_id"), "utf-8");
-			String clientType = URLEncoder.encode(data.get("client_type"), "utf-8");
-			String ipAddress = URLEncoder.encode(data.get("ip_address"), "utf-8");
+			String userId = data.get("user_id");
+			String clientType = data.get("client_type");
+			String ipAddress = data.get("ip_address");
 			
 			String getUrl = apiUrl + registerUrl + "?";
 			String param = "gt=" + this.captchaId + "&json_format=" + this.json_format;
 			
 			if (userId != null){
-				param = param + "&user_id=" + userId;
+				param = param + "&user_id=" + URLEncoder.encode(userId, "utf-8");
 			}
 			if (clientType != null){
-				param = param + "&client_type=" + clientType;
+				param = param + "&client_type=" + URLEncoder.encode(clientType, "utf-8");
 			}
 			if (ipAddress != null){
-				param = param + "&ip_address=" + ipAddress;
+				param = param + "&ip_address=" + URLEncoder.encode(ipAddress, "utf-8");
 			}
 			
 			gtlog("GET_URL:" + getUrl + param);
@@ -315,22 +315,22 @@ public class GeetestLib {
 
         gtlog("request legitimate");
 
-        String userId = URLEncoder.encode(data.get("user_id"), "utf-8");
-        String clientType = URLEncoder.encode(data.get("client_type"), "utf-8");
-        String ipAddress = URLEncoder.encode(data.get("ip_address"), "utf-8");
+		String userId = data.get("user_id");
+		String clientType = data.get("client_type");
+		String ipAddress = data.get("ip_address");
 
         String postUrl = this.apiUrl + this.validateUrl;
         String param = String.format(
             "challenge=%s&validate=%s&seccode=%s&json_format=%s", challenge, validate, seccode, this.json_format);
-		
+
 		if (userId != null){
-			param = param + "&user_id=" + userId;
+			param = param + "&user_id=" + URLEncoder.encode(userId, "utf-8");
 		}
 		if (clientType != null){
-			param = param + "&client_type=" + clientType;
+			param = param + "&client_type=" + URLEncoder.encode(clientType, "utf-8");
 		}
 		if (ipAddress != null){
-			param = param + "&ip_address=" + ipAddress;
+			param = param + "&ip_address=" + URLEncoder.encode(ipAddress, "utf-8");
 		}
 		
 		gtlog("param:" + param);
